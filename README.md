@@ -9,6 +9,8 @@ This is a basic TODO list application. Requirements are as such:
 - Clicking on "active" task marks it as "completed" by crossing it out
 - Should show a total count of all tasks in the list
 - Name for a new task is specified by typing in an input field
+- There should be a backend service (node.js), which enables data persistence
+- Data storage in firebase (https://firebase.google.com/)
 
 If there is anything unclear about the exact requirements, use your best judgement.
 Styling of the application is not important, and there will be no additional benefit in extending the application beyond the original requirements.
