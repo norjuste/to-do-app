@@ -7,7 +7,7 @@ class TodoList extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      tasks: this.props.tasks,
+      tasks: [],
     }
 
     this.addTask = this.addTask.bind(this)
@@ -16,42 +16,55 @@ class TodoList extends React.Component {
     this.renderDoneTasks = this.renderDoneTasks.bind(this)
   }
 
+  async componentDidMount() {
+    const tasks = await this.props.getTasks()
+    this.setState({ tasks })
+  }
+
   addTask(newTaskTitle) {
+    const newTask = { title: newTaskTitle, isCompleted: false, id: Date.now() }
+
+    this.props.addTask(newTask)
+
     this.setState((prevState) => ({
       ...prevState,
-      tasks: [
-        ...prevState.tasks,
-        { title: newTaskTitle, done: false, id: Date.now() },
-      ],
+      tasks: [...prevState.tasks, newTask],
     }))
   }
 
-  markTaskAsCompleted(taskId) {
+  markTaskAsCompleted(updatedTask) {
+    this.props.updateTask(updatedTask)
+
     this.setState((prevState) => ({
       ...prevState,
       tasks: prevState.tasks.map((task) =>
-        task.id === taskId ? { ...task, done: true } : task
+        task.id === updatedTask.id ? { ...task, isCompleted: true } : task
       ),
     }))
   }
 
   renderActiveTasks() {
     return this.state.tasks
-      .filter(({ done }) => !done)
-      .map(({ title, id }) => (
+      .filter(({ isCompleted }) => !isCompleted)
+      .map((task) => (
         <TodoListItem
+          key={task.id}
           isActive={true}
-          onClick={() => this.markTaskAsCompleted(id)}
+          onClick={() => this.markTaskAsCompleted(task)}
         >
-          {title}
+          {task.title}
         </TodoListItem>
       ))
   }
 
   renderDoneTasks() {
     return this.state.tasks
-      .filter(({ done }) => done)
-      .map(({ title }) => <TodoListItem isActive={false}>{title}</TodoListItem>)
+      .filter(({ isCompleted }) => isCompleted)
+      .map(({ title, id }) => (
+        <TodoListItem key={id} isActive={false}>
+          {title}
+        </TodoListItem>
+      ))
   }
 
   render() {
